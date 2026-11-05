@@ -1,0 +1,6 @@
+{
+  "name": "Portfolia",
+  "description": "Personal investment portfolio manager to track transactions, capital invested, monthly valuations, and month/year PnL analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
