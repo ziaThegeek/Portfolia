@@ -53,6 +53,7 @@ import com.example.ui.theme.LossRed
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.util.CurrencyManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -168,7 +169,7 @@ fun UpdateMonthlyPriceDialog(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
-                    text = "Asset Closing Prices ($)",
+                    text = "Asset Closing Prices (${CurrencyManager.currentCurrency.value.symbol.trim()})",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = TextSecondary

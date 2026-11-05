@@ -49,12 +49,10 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 @Composable
 fun HoldingsPricesScreen(
@@ -122,7 +120,7 @@ fun HoldingsPricesScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "Enter closing prices at the end of every month. The system will calculate monthly and yearly PnL ($ & %) and portfolio growth.",
+                        text = "Enter closing prices at the end of every month. The system will calculate monthly and yearly PnL (${CurrencyManager.currentCurrency.value.code} & %) and portfolio growth.",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextMuted
                     )
@@ -259,7 +257,7 @@ fun HoldingsPricesScreen(
                                     color = TextMuted
                                 )
                                 Text(
-                                    text = currencyFormatter.format(holding.currentPrice),
+                                    text = formatCurrencyPrecise(holding.currentPrice),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -285,25 +283,25 @@ fun HoldingsPricesScreen(
                                     color = TextPrimary
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text("Avg Buy: ${currencyFormatter.format(holding.avgBuyPrice)}", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                                Text("Avg Buy: ${formatCurrencyPrecise(holding.avgBuyPrice)}", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
                             }
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text("Invested Capital", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                                 Text(
-                                    text = currencyFormatter.format(holding.costBasis),
+                                    text = formatCurrency(holding.costBasis),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = CapitalAmber
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text("Value: ${currencyFormatter.format(holding.currentValue)}", style = MaterialTheme.typography.labelSmall, color = TextPrimary)
+                                Text("Value: ${formatCurrency(holding.currentValue)}", style = MaterialTheme.typography.labelSmall, color = TextPrimary)
                             }
 
                             Column(horizontalAlignment = Alignment.End) {
                                 Text("Total PnL", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                                 Text(
-                                    text = "${if (isProfit) "+" else ""}${currencyFormatter.format(holding.unrealizedPnL)}",
+                                    text = "${if (isProfit) "+" else ""}${formatCurrency(holding.unrealizedPnL)}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isProfit) ProfitGreen else LossRed

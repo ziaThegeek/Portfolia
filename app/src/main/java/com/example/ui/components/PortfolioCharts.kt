@@ -65,13 +65,10 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 0
-}
+import com.example.util.CurrencyManager
 
-private val currencyPreciseFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 /**
  * Interactive Dual Area/Line Chart: Portfolio Value vs Invested Capital
@@ -113,7 +110,7 @@ fun PortfolioValueAreaChart(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = currencyFormatter.format(selectedItem?.endingPortfolioValue ?: 0.0),
+                        text = formatCurrency(selectedItem?.endingPortfolioValue ?: 0.0),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -358,7 +355,7 @@ fun MonthlyPnLBarChart(
             val valText = if (showPercentage) {
                 "${if (selected.monthlyPnLPercent >= 0) "+" else ""}${String.format(Locale.US, "%.2f", selected.monthlyPnLPercent)}%"
             } else {
-                "${if (selected.monthlyPnL >= 0) "+" else ""}${currencyPreciseFormatter.format(selected.monthlyPnL)}"
+                "${if (selected.monthlyPnL >= 0) "+" else ""}${formatCurrencyPrecise(selected.monthlyPnL)}"
             }
 
             Row(
@@ -508,7 +505,7 @@ fun YearlyPnLBarChart(
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "${if (isPositive) "+" else ""}${currencyPreciseFormatter.format(yearItem.yearlyPnL)}",
+                                text = "${if (isPositive) "+" else ""}${formatCurrencyPrecise(yearItem.yearlyPnL)}",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isPositive) ProfitGreen else LossRed
@@ -556,12 +553,12 @@ fun YearlyPnLBarChart(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Year End Value: ${currencyFormatter.format(yearItem.yearEndValue)}",
+                            text = "Year End Value: ${formatCurrency(yearItem.yearEndValue)}",
                             style = MaterialTheme.typography.labelSmall,
                             color = TextSecondary
                         )
                         Text(
-                            text = "Capital: ${currencyFormatter.format(yearItem.investedCapital)}",
+                            text = "Capital: ${formatCurrency(yearItem.investedCapital)}",
                             style = MaterialTheme.typography.labelSmall,
                             color = TextMuted
                         )
@@ -678,7 +675,7 @@ fun AssetAllocationDonutChart(
                         color = TextMuted
                     )
                     Text(
-                        text = currencyFormatter.format(totalValue),
+                        text = formatCurrency(totalValue),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary

@@ -45,12 +45,10 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 @Composable
 fun PortfolioHeroCard(
@@ -135,7 +133,7 @@ fun PortfolioHeroCard(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = currencyFormatter.format(summary.totalCurrentValue),
+                    text = formatCurrencyPrecise(summary.totalCurrentValue),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary,
@@ -167,7 +165,7 @@ fun PortfolioHeroCard(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "${if (isProfit) "+" else ""}${currencyFormatter.format(summary.totalPnL)}",
+                                    text = "${if (isProfit) "+" else ""}${formatCurrencyPrecise(summary.totalPnL)}",
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isProfit) ProfitGreen else LossRed
@@ -191,7 +189,7 @@ fun PortfolioHeroCard(
                             color = TextMuted
                         )
                         Text(
-                            text = currencyFormatter.format(summary.totalInvestedCapital),
+                            text = formatCurrency(summary.totalInvestedCapital),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = CapitalAmber

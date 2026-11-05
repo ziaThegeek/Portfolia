@@ -47,16 +47,10 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 0
-}
-
-private val currencyPreciseFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 /**
  * Monthly Performance Table
@@ -96,6 +90,7 @@ fun MonthlyPerformanceTable(
 
             Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
                 // Header Row
+                val currSym = CurrencyManager.currentCurrency.value.symbol.trim()
                 Row(
                     modifier = Modifier
                         .background(DarkSurfaceElevated, RoundedCornerShape(6.dp))
@@ -105,9 +100,9 @@ fun MonthlyPerformanceTable(
                     TableHeaderCell("Month", width = 85.dp)
                     TableHeaderCell("Value", width = 95.dp, alignRight = true)
                     TableHeaderCell("Capital", width = 95.dp, alignRight = true)
-                    TableHeaderCell("MoM PnL ($)", width = 105.dp, alignRight = true)
+                    TableHeaderCell("MoM PnL ($currSym)", width = 110.dp, alignRight = true)
                     TableHeaderCell("MoM Return", width = 95.dp, alignRight = true)
-                    TableHeaderCell("Total PnL ($)", width = 105.dp, alignRight = true)
+                    TableHeaderCell("Total PnL ($currSym)", width = 110.dp, alignRight = true)
                     TableHeaderCell("Total Return", width = 95.dp, alignRight = true)
                 }
 
@@ -126,10 +121,10 @@ fun MonthlyPerformanceTable(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TableCell(item.displayMonth, width = 85.dp, isBold = true)
-                        TableCell(currencyFormatter.format(item.endingPortfolioValue), width = 95.dp, alignRight = true)
-                        TableCell(currencyFormatter.format(item.investedCapital), width = 95.dp, alignRight = true, color = TextSecondary)
+                        TableCell(formatCurrency(item.endingPortfolioValue), width = 95.dp, alignRight = true)
+                        TableCell(formatCurrency(item.investedCapital), width = 95.dp, alignRight = true, color = TextSecondary)
                         TableCell(
-                            text = "${if (isProfit) "+" else ""}${currencyPreciseFormatter.format(item.monthlyPnL)}",
+                            text = "${if (isProfit) "+" else ""}${formatCurrencyPrecise(item.monthlyPnL)}",
                             width = 105.dp,
                             alignRight = true,
                             color = if (isProfit) ProfitGreen else LossRed,
@@ -143,7 +138,7 @@ fun MonthlyPerformanceTable(
                             isBold = true
                         )
                         TableCell(
-                            text = "${if (isTotalProfit) "+" else ""}${currencyPreciseFormatter.format(item.totalPnL)}",
+                            text = "${if (isTotalProfit) "+" else ""}${formatCurrencyPrecise(item.totalPnL)}",
                             width = 105.dp,
                             alignRight = true,
                             color = if (isTotalProfit) ProfitGreen else LossRed
@@ -199,6 +194,7 @@ fun YearlyPerformanceTable(
             Spacer(modifier = Modifier.height(8.dp))
 
             Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
+                val currSym = CurrencyManager.currentCurrency.value.symbol.trim()
                 Row(
                     modifier = Modifier
                         .background(DarkSurfaceElevated, RoundedCornerShape(6.dp))
@@ -208,7 +204,7 @@ fun YearlyPerformanceTable(
                     TableHeaderCell("Year", width = 75.dp)
                     TableHeaderCell("Year End Value", width = 110.dp, alignRight = true)
                     TableHeaderCell("Invested Capital", width = 110.dp, alignRight = true)
-                    TableHeaderCell("Annual PnL ($)", width = 110.dp, alignRight = true)
+                    TableHeaderCell("Annual PnL ($currSym)", width = 115.dp, alignRight = true)
                     TableHeaderCell("Annual Return", width = 100.dp, alignRight = true)
                     TableHeaderCell("Cumulative Return", width = 115.dp, alignRight = true)
                 }
@@ -227,10 +223,10 @@ fun YearlyPerformanceTable(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TableCell(item.year, width = 75.dp, isBold = true)
-                        TableCell(currencyFormatter.format(item.yearEndValue), width = 110.dp, alignRight = true)
-                        TableCell(currencyFormatter.format(item.investedCapital), width = 110.dp, alignRight = true, color = TextSecondary)
+                        TableCell(formatCurrency(item.yearEndValue), width = 110.dp, alignRight = true)
+                        TableCell(formatCurrency(item.investedCapital), width = 110.dp, alignRight = true, color = TextSecondary)
                         TableCell(
-                            text = "${if (isProfit) "+" else ""}${currencyPreciseFormatter.format(item.yearlyPnL)}",
+                            text = "${if (isProfit) "+" else ""}${formatCurrencyPrecise(item.yearlyPnL)}",
                             width = 110.dp,
                             alignRight = true,
                             color = if (isProfit) ProfitGreen else LossRed,
@@ -300,7 +296,7 @@ fun HoldingsTable(
                     TableHeaderCell("Current Price", width = 100.dp, alignRight = true)
                     TableHeaderCell("Invested", width = 95.dp, alignRight = true)
                     TableHeaderCell("Current Value", width = 100.dp, alignRight = true)
-                    TableHeaderCell("PnL ($)", width = 100.dp, alignRight = true)
+                    TableHeaderCell("PnL (${CurrencyManager.currentCurrency.value.symbol.trim()})", width = 105.dp, alignRight = true)
                     TableHeaderCell("PnL (%)", width = 85.dp, alignRight = true)
                 }
 
@@ -354,12 +350,12 @@ fun HoldingsTable(
                             width = 85.dp,
                             alignRight = true
                         )
-                        TableCell(currencyPreciseFormatter.format(holding.avgBuyPrice), width = 90.dp, alignRight = true)
-                        TableCell(currencyPreciseFormatter.format(holding.currentPrice), width = 100.dp, alignRight = true)
-                        TableCell(currencyFormatter.format(holding.costBasis), width = 95.dp, alignRight = true, color = TextSecondary)
-                        TableCell(currencyFormatter.format(holding.currentValue), width = 100.dp, alignRight = true, isBold = true)
+                        TableCell(formatCurrencyPrecise(holding.avgBuyPrice), width = 90.dp, alignRight = true)
+                        TableCell(formatCurrencyPrecise(holding.currentPrice), width = 100.dp, alignRight = true)
+                        TableCell(formatCurrency(holding.costBasis), width = 95.dp, alignRight = true, color = TextSecondary)
+                        TableCell(formatCurrency(holding.currentValue), width = 100.dp, alignRight = true, isBold = true)
                         TableCell(
-                            text = "${if (isProfit) "+" else ""}${currencyPreciseFormatter.format(holding.unrealizedPnL)}",
+                            text = "${if (isProfit) "+" else ""}${formatCurrencyPrecise(holding.unrealizedPnL)}",
                             width = 100.dp,
                             alignRight = true,
                             color = if (isProfit) ProfitGreen else LossRed,
@@ -464,9 +460,9 @@ fun TransactionHistoryTable(
                             width = 85.dp,
                             alignRight = true
                         )
-                        TableCell(currencyPreciseFormatter.format(tx.pricePerUnit), width = 90.dp, alignRight = true)
-                        TableCell(currencyPreciseFormatter.format(tx.fees), width = 60.dp, alignRight = true, color = TextMuted)
-                        TableCell(currencyPreciseFormatter.format(tx.totalAmount), width = 95.dp, alignRight = true, isBold = true)
+                        TableCell(formatCurrencyPrecise(tx.pricePerUnit), width = 90.dp, alignRight = true)
+                        TableCell(formatCurrencyPrecise(tx.fees), width = 60.dp, alignRight = true, color = TextMuted)
+                        TableCell(formatCurrencyPrecise(tx.totalAmount), width = 95.dp, alignRight = true, isBold = true)
                         TableCell(tx.notes.ifEmpty { "-" }, width = 120.dp, color = TextSecondary)
 
                         IconButton(

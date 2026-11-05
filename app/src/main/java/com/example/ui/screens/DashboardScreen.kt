@@ -61,12 +61,10 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 @Composable
 fun DashboardScreen(
@@ -200,7 +198,7 @@ fun DashboardScreen(
                 StatMetricCard(
                     title = "Latest Month",
                     value = momText,
-                    subtitle = currencyFormatter.format(state.summary.latestMonthlyPnL),
+                    subtitle = formatCurrencyPrecise(state.summary.latestMonthlyPnL),
                     icon = if (state.summary.latestMonthlyPnL >= 0) Icons.AutoMirrored.Filled.TrendingUp else Icons.Default.ShowChart,
                     iconColor = if (state.summary.latestMonthlyPnL >= 0) ProfitGreen else LossRed,
                     modifier = Modifier.weight(1f)
@@ -210,7 +208,7 @@ fun DashboardScreen(
                 StatMetricCard(
                     title = "Year to Date",
                     value = yoyText,
-                    subtitle = currencyFormatter.format(state.summary.currentYearPnL),
+                    subtitle = formatCurrencyPrecise(state.summary.currentYearPnL),
                     icon = Icons.Default.AutoGraph,
                     iconColor = if (state.summary.currentYearPnL >= 0) ProfitGreen else LossRed,
                     modifier = Modifier.weight(1f)
@@ -235,7 +233,7 @@ fun DashboardScreen(
 
                 StatMetricCard(
                     title = "Realized PnL",
-                    value = currencyFormatter.format(state.summary.totalRealizedPnL),
+                    value = formatCurrencyPrecise(state.summary.totalRealizedPnL),
                     subtitle = "${state.summary.transactionCount} Trades recorded",
                     icon = Icons.Default.CurrencyExchange,
                     iconColor = if (state.summary.totalRealizedPnL >= 0) ProfitGreen else LossRed,
@@ -390,7 +388,7 @@ fun DashboardScreen(
                                             color = TextPrimary
                                         )
                                         Text(
-                                            text = "${String.format(Locale.US, if (holding.unitsHeld < 1) "%.4f" else "%.2f", holding.unitsHeld)} @ ${currencyFormatter.format(holding.currentPrice)}",
+                                            text = "${String.format(Locale.US, if (holding.unitsHeld < 1) "%.4f" else "%.2f", holding.unitsHeld)} @ ${formatCurrencyPrecise(holding.currentPrice)}",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = TextMuted
                                         )
@@ -399,13 +397,13 @@ fun DashboardScreen(
 
                                 Column(horizontalAlignment = Alignment.End) {
                                     Text(
-                                        text = currencyFormatter.format(holding.currentValue),
+                                        text = formatCurrency(holding.currentValue),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = TextPrimary
                                     )
                                     Text(
-                                        text = "${if (isProfit) "+" else ""}${String.format(Locale.US, "%.1f", holding.unrealizedPnLPercent)}% (${if (isProfit) "+" else ""}${currencyFormatter.format(holding.unrealizedPnL)})",
+                                        text = "${if (isProfit) "+" else ""}${String.format(Locale.US, "%.1f", holding.unrealizedPnLPercent)}% (${if (isProfit) "+" else ""}${formatCurrencyPrecise(holding.unrealizedPnL)})",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = if (isProfit) ProfitGreen else LossRed

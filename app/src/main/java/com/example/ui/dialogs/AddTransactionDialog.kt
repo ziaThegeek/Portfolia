@@ -54,6 +54,7 @@ import com.example.ui.theme.LossRed
 import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.util.CurrencyManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -332,10 +333,11 @@ fun AddTransactionDialog(
                         )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+                    val currSymbol = CurrencyManager.currentCurrency.value.symbol.trim()
                     OutlinedTextField(
                         value = priceText,
                         onValueChange = { priceText = it },
-                        label = { Text("Price/Unit ($)") },
+                        label = { Text("Price/Unit ($currSymbol)") },
                         placeholder = { Text("e.g. 150.00") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
@@ -355,7 +357,7 @@ fun AddTransactionDialog(
                 OutlinedTextField(
                     value = feesText,
                     onValueChange = { feesText = it },
-                    label = { Text("Trading Fees ($)") },
+                    label = { Text("Trading Fees ($currSymbol)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -400,7 +402,7 @@ fun AddTransactionDialog(
                             color = TextSecondary
                         )
                         Text(
-                            text = String.format(Locale.US, "$%.2f", calculatedTotal),
+                            text = CurrencyManager.formatPrecise(calculatedTotal),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary

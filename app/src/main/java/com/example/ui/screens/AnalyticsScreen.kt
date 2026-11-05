@@ -59,12 +59,10 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 0
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
+private fun formatCurrencyPrecise(amount: Double): String = CurrencyManager.formatPrecise(amount)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,7 +138,7 @@ fun AnalyticsScreen(
                             )
                             StatMetricCard(
                                 title = "Best Month",
-                                value = bestMonth?.let { "${if (it.monthlyPnL >= 0) "+" else ""}${currencyFormatter.format(it.monthlyPnL)}" } ?: "-",
+                                value = bestMonth?.let { "${if (it.monthlyPnL >= 0) "+" else ""}${formatCurrency(it.monthlyPnL)}" } ?: "-",
                                 subtitle = bestMonth?.displayMonth ?: "No data",
                                 icon = Icons.AutoMirrored.Filled.TrendingUp,
                                 iconColor = ProfitGreen,
@@ -182,7 +180,7 @@ fun AnalyticsScreen(
                                         FilterChip(
                                             selected = !showMonthlyPercentage,
                                             onClick = { showMonthlyPercentage = false },
-                                            label = { Text("$", fontWeight = FontWeight.Bold) },
+                                            label = { Text(CurrencyManager.currentCurrency.value.symbol.trim(), fontWeight = FontWeight.Bold) },
                                             colors = FilterChipDefaults.filterChipColors(
                                                 selectedContainerColor = BrandPrimary.copy(alpha = 0.2f),
                                                 selectedLabelColor = BrandPrimary
@@ -240,7 +238,7 @@ fun AnalyticsScreen(
                             )
                             StatMetricCard(
                                 title = "Top Annual Gain",
-                                value = bestYear?.let { "${if (it.yearlyPnL >= 0) "+" else ""}${currencyFormatter.format(it.yearlyPnL)}" } ?: "-",
+                                value = bestYear?.let { "${if (it.yearlyPnL >= 0) "+" else ""}${formatCurrency(it.yearlyPnL)}" } ?: "-",
                                 subtitle = bestYear?.let { "${it.year} (${String.format(Locale.US, "%.1f", it.yearlyPnLPercent)}%)" } ?: "No data",
                                 icon = Icons.AutoMirrored.Filled.TrendingUp,
                                 iconColor = ProfitGreen,

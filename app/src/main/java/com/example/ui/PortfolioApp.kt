@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,6 +38,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -59,6 +61,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
 import com.example.ui.dialogs.AddAssetDialog
 import com.example.ui.dialogs.AddTransactionDialog
+import com.example.ui.dialogs.SelectCurrencyDialog
 import com.example.ui.dialogs.UpdateMonthlyPriceDialog
 import com.example.ui.screens.AnalyticsScreen
 import com.example.ui.screens.DashboardScreen
@@ -88,6 +91,7 @@ fun PortfolioApp(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val activeDialog by viewModel.activeDialog.collectAsStateWithLifecycle()
+    val currency by viewModel.currency.collectAsStateWithLifecycle()
     var selectedScreenIndex by remember { mutableIntStateOf(0) }
     var menuExpanded by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -151,6 +155,35 @@ fun PortfolioApp(
                     }
                 },
                 actions = {
+                    // Currency Selector Badge/Button
+                    Surface(
+                        onClick = { viewModel.openSelectCurrencyDialog() },
+                        shape = RoundedCornerShape(8.dp),
+                        color = BrandPrimary.copy(alpha = 0.15f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, BrandPrimary.copy(alpha = 0.4f)),
+                        modifier = Modifier
+                            .testTag("top_currency_button")
+                            .padding(end = 4.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = currency.symbol.trim(),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = BrandPrimary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = currency.code,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = TextPrimary
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = { viewModel.openAddTransactionDialog() },
                         modifier = Modifier.testTag("top_add_trade_button")
@@ -174,6 +207,16 @@ fun PortfolioApp(
                         onDismissRequest = { menuExpanded = false },
                         containerColor = DarkSurfaceElevated
                     ) {
+                        DropdownMenuItem(
+                            text = { Text("Currency (${currency.code})") },
+                            leadingIcon = {
+                                Icon(Icons.Default.CurrencyExchange, contentDescription = null, tint = BrandPrimary)
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                viewModel.openSelectCurrencyDialog()
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text("+ Record Trade") },
                             onClick = {
@@ -319,6 +362,15 @@ fun PortfolioApp(
                     onSavePrices = { ym, prices -> viewModel.saveMonthlyPrices(ym, prices) },
                     onOpenAddAsset = { viewModel.openAddAssetDialog() },
                     onSeedSampleData = { viewModel.seedSampleData() }
+                )
+            }
+            is ActiveDialog.SelectCurrency -> {
+                SelectCurrencyDialog(
+                    currentCurrency = currency,
+                    onDismiss = { viewModel.closeDialog() },
+                    onCurrencySelected = { selectedCurrency ->
+                        viewModel.setCurrency(selectedCurrency)
+                    }
                 )
             }
             ActiveDialog.None -> {}

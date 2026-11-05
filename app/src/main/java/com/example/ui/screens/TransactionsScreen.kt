@@ -51,12 +51,9 @@ import com.example.ui.theme.ProfitGreen
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.util.CurrencyManager
 
-private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US).apply {
-    maximumFractionDigits = 2
-}
+private fun formatCurrency(amount: Double): String = CurrencyManager.format(amount)
 
 @Composable
 fun TransactionsScreen(
@@ -155,7 +152,7 @@ fun TransactionsScreen(
                             Column {
                                 Text("Total Purchases", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                                 Text(
-                                    text = currencyFormatter.format(totalBuyAmount),
+                                    text = formatCurrency(totalBuyAmount),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = ProfitGreen
@@ -164,7 +161,7 @@ fun TransactionsScreen(
                             Column {
                                 Text("Total Sales", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                                 Text(
-                                    text = currencyFormatter.format(totalSellAmount),
+                                    text = formatCurrency(totalSellAmount),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = LossRed
@@ -173,7 +170,7 @@ fun TransactionsScreen(
                             Column(horizontalAlignment = Alignment.End) {
                                 Text("Net Cash Deployed", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                                 Text(
-                                    text = currencyFormatter.format(netCashDeployed),
+                                    text = formatCurrency(netCashDeployed),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = CapitalAmber

@@ -21,11 +21,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import com.example.util.AppCurrency
+import com.example.util.CurrencyManager
+
 sealed class ActiveDialog {
     data object None : ActiveDialog()
     data class AddTransaction(val preselectedAssetId: Long? = null) : ActiveDialog()
     data object AddAsset : ActiveDialog()
     data object UpdateMonthlyPrice : ActiveDialog()
+    data object SelectCurrency : ActiveDialog()
 }
 
 data class PortfolioUiState(
@@ -45,8 +49,10 @@ data class PortfolioUiState(
 class PortfolioViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: PortfolioRepository
+    val currency: StateFlow<AppCurrency> = CurrencyManager.currentCurrency
 
     init {
+        CurrencyManager.init(application)
         val database = AppDatabase.getDatabase(application)
         repository = PortfolioRepository(
             assetDao = database.assetDao(),
@@ -127,6 +133,16 @@ class PortfolioViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun openUpdatePriceDialog() {
         _activeDialog.value = ActiveDialog.UpdateMonthlyPrice
+    }
+
+    fun openSelectCurrencyDialog() {
+        _activeDialog.value = ActiveDialog.SelectCurrency
+    }
+
+    fun setCurrency(currency: AppCurrency) {
+        CurrencyManager.setCurrency(currency)
+        _activeDialog.value = ActiveDialog.None
+        _userMessage.value = "Currency set to ${currency.code} (${currency.symbol.trim()})"
     }
 
     fun closeDialog() {
